@@ -56,10 +56,15 @@ resource "aws_ecs_service" "this" {
     container_port   = var.container_port
   }
 
-  # @todo: This might be needed to allow autoscaling of tasks without terraform plan showing difference
-  # lifecycle {
-  #   ignore_changes = [desired_count]
-  # }
+  ordered_placement_strategy {
+    type  = "spread"
+    field = "attribute:ecs.availability-zone"
+  }
+
+  # allow autoscaling of tasks without terraform plan showing difference
+  lifecycle {
+    ignore_changes = [desired_count]
+  }
 
 
   # @todo: To prevent a race condition during service deletion, make sure to set depends_on to the related aws_iam_role_policy;

@@ -67,12 +67,12 @@ variable "ecs_instance_type" {
 #   }
 # }
 
-variable "ecs_autoscaling_min_size" {
+variable "ec2_autoscaling_min_size" {
   type    = number
   default = 1
 }
 
-variable "ecs_autoscaling_max_size" {
+variable "ec2_autoscaling_max_size" {
   type    = number
   default = 3
 }
@@ -80,6 +80,31 @@ variable "ecs_autoscaling_max_size" {
 variable "ecs_task_desired_count" {
   type    = number
   default = 1
+}
+
+variable "ecs_task_autoscaling_min" {
+  type = number
+  default = 1
+}
+
+variable "ecs_task_autoscaling_max" {
+  type = number
+  default = 5
+}
+
+variable "ecs_task_autoscaling_request_count" {
+  type = number
+  default = 2
+}
+
+variable "ecs_task_scale_in_cooldown" {
+  type = number
+  default = 120
+}
+
+variable "ecs_task_scale_out_cooldown" {
+  type = number
+  default = 120
 }
 
 variable "nat_instance_type" {

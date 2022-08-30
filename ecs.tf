@@ -50,8 +50,8 @@ resource "aws_autoscaling_group" "ecs-autoscaling" {
   name                 = "${local.name_prefix}-ecs-autoscaling"
   vpc_zone_identifier  = module.vpc.private_subnets
   launch_configuration = aws_launch_configuration.ecs-launchconfig.name
-  min_size             = var.ecs_autoscaling_min_size
-  max_size             = var.ecs_autoscaling_max_size
+  min_size             = var.ec2_autoscaling_min_size
+  max_size             = var.ec2_autoscaling_max_size
 
   tag {
     key                 = "Name"
@@ -91,5 +91,36 @@ resource "aws_ecs_capacity_provider" "ecs-default-capacity-provider" {
       target_capacity = 80
     }
   }
+}
+
+
+resource "aws_appautoscaling_target" "ecs-app-target" {
+  max_capacity       = var.ecs_task_autoscaling_max
+  min_capacity       = var.ecs_task_autoscaling_min
+
+  resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.this.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
+
+resource "aws_appautoscaling_policy" "ecs-app-scaling" {
+  name               = "${local.name_prefix}-ecs-app-scaling"
+  policy_type        = "TargetTrackingScaling"
+  resource_id        = aws_appautoscaling_target.ecs-app-target.resource_id
+  scalable_dimension = aws_appautoscaling_target.ecs-app-target.scalable_dimension
+  service_namespace  = aws_appautoscaling_target.ecs-app-target.service_namespace
+
+  target_tracking_scaling_policy_configuration {
+    predefined_metric_specification {
+      predefined_metric_type = "ALBRequestCountPerTarget"
+      resource_label = "${aws_alb.ecs-alb.arn_suffix}/${aws_alb_target_group.ecs-tg.arn_suffix}"
+    }
+
+    target_value       = var.ecs_task_autoscaling_request_count
+    scale_in_cooldown  = var.ecs_task_scale_in_cooldown
+    scale_out_cooldown = var.ecs_task_scale_out_cooldown
+  }
+
+  depends_on = [aws_appautoscaling_target.ecs-app-target]
 }
 
