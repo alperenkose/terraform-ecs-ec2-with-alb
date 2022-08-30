@@ -5,6 +5,9 @@
 *.tfstate
 *.tfstate.*
 
+# backend config files
+*.tfbackend
+
 # crash log files
 crash.log
 
