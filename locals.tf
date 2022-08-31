@@ -9,4 +9,7 @@ locals {
     container_mem   = var.container_mem,
     container_port  = var.container_port
   }
+
+  alb_listener_ports = var.alb_listener_enable_https == true ? toset([80, 443]) : toset([80])
+
 }

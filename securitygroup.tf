@@ -40,11 +40,15 @@ resource "aws_security_group" "ecs-alb-sg" {
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  ingress {
-    from_port   = var.alb_listener_port
-    to_port     = var.alb_listener_port
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
+  dynamic "ingress" {
+    for_each = local.alb_listener_ports
+
+    content {
+      from_port   = ingress.key
+      to_port     = ingress.key
+      protocol    = "tcp"
+      cidr_blocks = ["0.0.0.0/0"]
+    }
   }
 
   tags = {

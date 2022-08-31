@@ -83,27 +83,27 @@ variable "ecs_task_desired_count" {
 }
 
 variable "ecs_task_autoscaling_min" {
-  type = number
+  type    = number
   default = 1
 }
 
 variable "ecs_task_autoscaling_max" {
-  type = number
+  type    = number
   default = 5
 }
 
 variable "ecs_task_autoscaling_request_count" {
-  type = number
+  type    = number
   default = 2
 }
 
 variable "ecs_task_scale_in_cooldown" {
-  type = number
+  type    = number
   default = 120
 }
 
 variable "ecs_task_scale_out_cooldown" {
-  type = number
+  type    = number
   default = 120
 }
 
@@ -156,14 +156,18 @@ variable "container_port" {
   # @todo: check integer and valid range
 }
 
-variable "alb_listener_port" {
-  type    = number
-  default = 80
-  # @todo: check integer and valid range  
+variable "alb_listener_enable_https" {
+  type    = bool
+  default = false
 }
 
-variable "alb_listener_protocol" {
-  type    = string
-  default = "HTTP"
-  # @todo; check whether HTTP or HTTPS
+variable "app_route53_zone" {
+  type = string
+}
+
+variable "app_fqdn" {
+  type = string
+
+  # @todo; check if fqdn matches with dns zone
+  # @todo; must be provided if https is enabled
 }

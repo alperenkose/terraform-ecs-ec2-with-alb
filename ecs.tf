@@ -29,7 +29,7 @@ resource "aws_ecs_cluster" "ecs-cluster" {
 
 # Lunch configuration to be used for creating new EC2 instances
 resource "aws_launch_configuration" "ecs-launchconfig" {
-  name_prefix = "${local.name_prefix}-ecs-launchconfig"
+  name_prefix          = "${local.name_prefix}-ecs-launchconfig"
   image_id             = data.aws_ami.latest_ecs.id
   instance_type        = var.ecs_instance_type
   key_name             = data.aws_key_pair.project-keypair.key_name
@@ -95,8 +95,8 @@ resource "aws_ecs_capacity_provider" "ecs-default-capacity-provider" {
 
 
 resource "aws_appautoscaling_target" "ecs-app-target" {
-  max_capacity       = var.ecs_task_autoscaling_max
-  min_capacity       = var.ecs_task_autoscaling_min
+  max_capacity = var.ecs_task_autoscaling_max
+  min_capacity = var.ecs_task_autoscaling_min
 
   resource_id        = "service/${aws_ecs_cluster.ecs-cluster.name}/${aws_ecs_service.this.name}"
   scalable_dimension = "ecs:service:DesiredCount"
@@ -113,7 +113,7 @@ resource "aws_appautoscaling_policy" "ecs-app-scaling" {
   target_tracking_scaling_policy_configuration {
     predefined_metric_specification {
       predefined_metric_type = "ALBRequestCountPerTarget"
-      resource_label = "${aws_alb.ecs-alb.arn_suffix}/${aws_alb_target_group.ecs-tg.arn_suffix}"
+      resource_label         = "${aws_alb.ecs-alb.arn_suffix}/${aws_alb_target_group.ecs-tg.arn_suffix}"
     }
 
     target_value       = var.ecs_task_autoscaling_request_count
