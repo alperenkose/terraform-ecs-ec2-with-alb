@@ -38,14 +38,6 @@ variable "vpc_tags" {
   }
 }
 
-# variable "PATH_TO_PRIVATE_KEY" {
-#   default = "infra-task-keypair"
-# }
-
-# variable "PATH_TO_PUBLIC_KEY" {
-#   default = "infra-task-keypair.pub"
-# }
-
 variable "ec2_key_pair" {
   type     = string
   nullable = false
@@ -59,13 +51,6 @@ variable "ec2_key_pair" {
 variable "ecs_instance_type" {
   default = "t2.micro"
 }
-
-# variable "ecs_amis" {
-#   type = map(string)
-#   default = {
-#     us-east-1 = "ami-040d909ea4e56f8f3"
-#   }
-# }
 
 variable "ec2_autoscaling_min_size" {
   type    = number
@@ -110,13 +95,6 @@ variable "ecs_task_scale_out_cooldown" {
 variable "nat_instance_type" {
   default = "t2.micro"
 }
-
-# variable "nat_amis" {
-#   type = map(string)
-#   default = {
-#     us-east-1 = "ami-0cff7528ff583bf9a"
-#   }
-# }
 
 variable "project_name" {
   type     = string

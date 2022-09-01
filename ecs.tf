@@ -36,7 +36,6 @@ resource "aws_launch_configuration" "ecs-launchconfig" {
   iam_instance_profile = aws_iam_instance_profile.ecs-instance-role.id
   security_groups      = [aws_security_group.ecs-sg.id]
 
-  # user_data            = "#!/bin/bash\necho 'ECS_CLUSTER=${local.name_prefix}-ecs-cluster' > /etc/ecs/ecs.config\nstart ecs"
   user_data = templatefile("templates/ecs-ec2-userdata.sh.tpl", {
     ecs_cluster_name = "${local.name_prefix}-ecs-cluster"
   })
