@@ -92,10 +92,6 @@ variable "ecs_task_scale_out_cooldown" {
   default = 120
 }
 
-variable "nat_instance_type" {
-  default = "t2.micro"
-}
-
 variable "project_name" {
   type     = string
   nullable = false

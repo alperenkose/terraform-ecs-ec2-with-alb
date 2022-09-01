@@ -25,6 +25,8 @@ data "aws_ami" "latest_ecs" {
 # ECS cluster
 resource "aws_ecs_cluster" "ecs-cluster" {
   name = "${local.name_prefix}-ecs-cluster"
+
+  depends_on = [module.vpc]
 }
 
 # Lunch configuration to be used for creating new EC2 instances
