@@ -6,5 +6,5 @@ output "app_alb_domain" {
 
 output "app_fqdn" {
   description = "FQDN pointing to the ALB for the application"
-  value       = aws_route53_record.app.fqdn
+  value       = length(aws_route53_record.app) > 0 ? one(aws_route53_record.app).fqdn : null
 }

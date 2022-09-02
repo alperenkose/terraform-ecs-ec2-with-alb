@@ -11,5 +11,4 @@ locals {
   }
 
   alb_listener_ports = var.alb_listener_enable_https == true ? toset([80, 443]) : toset([80])
-
 }

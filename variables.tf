@@ -30,14 +30,6 @@ variable "vpc_private_subnets" {
   default = ["10.1.3.0/24", "10.1.4.0/24"]
 }
 
-variable "vpc_tags" {
-  type = map(any)
-  default = {
-    "Terraform"   = "true"
-    "Environment" = "dev"
-  }
-}
-
 variable "ec2_key_pair" {
   type     = string
   nullable = false
@@ -60,6 +52,11 @@ variable "ec2_autoscaling_min_size" {
 variable "ec2_autoscaling_max_size" {
   type    = number
   default = 3
+}
+
+variable "ec2_autoscaling_target_capacity" {
+  type    = number
+  default = 80
 }
 
 variable "ecs_task_desired_count" {
@@ -115,19 +112,16 @@ variable "container_image" {
 variable "container_cpu" {
   type    = number
   default = 128
-  # @todo: check integer and valid range
 }
 
 variable "container_mem" {
   type    = number
   default = 128
-  # @todo: check integer and valid range
 }
 
 variable "container_port" {
   type    = number
   default = 80
-  # @todo: check integer and valid range
 }
 
 variable "alb_listener_enable_https" {
@@ -136,12 +130,11 @@ variable "alb_listener_enable_https" {
 }
 
 variable "app_route53_zone" {
-  type = string
+  type    = string
+  default = null
 }
 
 variable "app_fqdn" {
-  type = string
-
-  # @todo; check if fqdn matches with dns zone
-  # @todo; must be provided if https is enabled
+  type    = string
+  default = null
 }
