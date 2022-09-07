@@ -1,24 +1,30 @@
 
 # public facing Application Load Balancer
-resource "aws_alb" "ecs-alb" {
-  name               = "${local.name_prefix}-ecs-alb"
-  subnets            = module.vpc.public_subnets
-  security_groups    = ["${aws_security_group.ecs-alb-sg.id}"]
+resource "aws_alb" "this" {
+  name               = "${var.name_prefix}-alb"
+  subnets            = var.vpc.public_subnets
+  security_groups    = ["${aws_security_group.alb-sg.id}"]
   internal           = false
   load_balancer_type = "application"
+  tags               = var.tags
 }
 
-resource "aws_alb_target_group" "ecs-tg" {
-  name        = "${local.name_prefix}-ecs-tg"
-  port        = var.container_port
+resource "aws_alb_target_group" "this" {
+  name        = "${var.name_prefix}-tg"
+  port        = var.target_group_port
   protocol    = "HTTP"
-  vpc_id      = module.vpc.vpc_id
+  vpc_id      = var.vpc.vpc_id
   target_type = "instance"
+  tags        = var.tags
+
+  # this is to make sure alb arn is ready when target group is created
+  # target group arn is used by ECS service and ALB should be ready
+  depends_on = [aws_alb.this]
 }
 
 # Redirect HTTP traffic from the ALB to the target group
 resource "aws_alb_listener" "http" {
-  load_balancer_arn = aws_alb.ecs-alb.arn
+  load_balancer_arn = aws_alb.this.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -39,7 +45,7 @@ resource "aws_alb_listener" "http" {
   dynamic "default_action" {
     for_each = var.alb_listener_enable_https ? [] : [1]
     content {
-      target_group_arn = aws_alb_target_group.ecs-tg.arn
+      target_group_arn = aws_alb_target_group.this.arn
       type             = "forward"
     }
   }
@@ -50,13 +56,13 @@ resource "aws_alb_listener" "https" {
   # run if https is enabled
   count = var.alb_listener_enable_https ? 1 : 0
 
-  load_balancer_arn = aws_alb.ecs-alb.arn
+  load_balancer_arn = aws_alb.this.arn
   port              = 443
   protocol          = "HTTPS"
   certificate_arn   = aws_acm_certificate_validation.validation[0].certificate_arn
 
   default_action {
-    target_group_arn = aws_alb_target_group.ecs-tg.arn
+    target_group_arn = aws_alb_target_group.this.arn
     type             = "forward"
   }
 
@@ -90,6 +96,8 @@ resource "aws_acm_certificate" "app_ssl" {
 
   domain_name       = aws_route53_record.app[0].fqdn
   validation_method = "DNS"
+  tags              = var.tags
+
   lifecycle {
     create_before_destroy = true
 
@@ -156,8 +164,8 @@ resource "aws_route53_record" "app" {
   type    = "A"
 
   alias {
-    name                   = aws_alb.ecs-alb.dns_name
-    zone_id                = aws_alb.ecs-alb.zone_id
+    name                   = aws_alb.this.dns_name
+    zone_id                = aws_alb.this.zone_id
     evaluate_target_health = false
   }
 

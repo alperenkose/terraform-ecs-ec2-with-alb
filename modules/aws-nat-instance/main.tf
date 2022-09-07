@@ -36,10 +36,12 @@ resource "aws_instance" "nat" {
     private_subnets_cidr_blocks = var.private_subnets_cidr_blocks
   })
 
-  tags = {
-    Name = var.instance_name
-    Role = "nat"
-  }
+  tags = merge(var.tags,
+    {
+      Name = var.instance_name,
+      Role = "nat"
+    }
+  )
 }
 
 # Add route to NAT instance in private subnets
@@ -56,6 +58,7 @@ resource "aws_security_group" "nat-sg" {
   vpc_id      = var.vpc_id
   name        = "${var.instance_name}-nat-sg"
   description = "Security group for NAT instance"
+  tags        = var.tags
 
   ingress = [
     {

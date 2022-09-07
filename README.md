@@ -13,7 +13,7 @@ Requirements
 ------------
 
 * Need to create S3 bucket and Dynamodb table for S3 backend.
-* Route53 DNS zone should be present on AWS if custom domain is required. In that case both DNS zone name (app\_route53\_zone) and FQDN for the application (app\_fqdn) should be provided.
+* Route53 DNS zone should be present on AWS if custom domain is required. In that case both DNS zone name (app\_route53\_zone) and FQDN for the application (app\_fqdn) should be provided within the alb input variable.
 
 Usage
 -----

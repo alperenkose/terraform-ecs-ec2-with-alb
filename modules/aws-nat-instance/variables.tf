@@ -11,6 +11,12 @@ variable "key_pair_name" {
   type = string
 }
 
+variable "tags" {
+  description = "Tags to associate with created resources."
+  default     = {}
+  type        = map(any)
+}
+
 variable "vpc_id" {
   type = string
 }

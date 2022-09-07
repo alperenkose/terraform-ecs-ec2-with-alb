@@ -37,7 +37,7 @@ resource "aws_iam_role" "ecs-instance-role" {
   ]
 }
 EOF
-
+  tags               = var.tags
 }
 
 # ecs-instance-role instance profile - in order to assign to EC2 instances

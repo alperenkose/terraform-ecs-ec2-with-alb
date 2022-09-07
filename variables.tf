@@ -40,55 +40,6 @@ variable "ec2_key_pair" {
   }
 }
 
-variable "ecs_instance_type" {
-  default = "t2.micro"
-}
-
-variable "ec2_autoscaling_min_size" {
-  type    = number
-  default = 1
-}
-
-variable "ec2_autoscaling_max_size" {
-  type    = number
-  default = 3
-}
-
-variable "ec2_autoscaling_target_capacity" {
-  type    = number
-  default = 80
-}
-
-variable "ecs_task_desired_count" {
-  type    = number
-  default = 1
-}
-
-variable "ecs_task_autoscaling_min" {
-  type    = number
-  default = 1
-}
-
-variable "ecs_task_autoscaling_max" {
-  type    = number
-  default = 5
-}
-
-variable "ecs_task_autoscaling_request_count" {
-  type    = number
-  default = 2
-}
-
-variable "ecs_task_scale_in_cooldown" {
-  type    = number
-  default = 120
-}
-
-variable "ecs_task_scale_out_cooldown" {
-  type    = number
-  default = 120
-}
-
 variable "project_name" {
   type     = string
   nullable = false
@@ -99,42 +50,77 @@ variable "project_name" {
   }
 }
 
-variable "container_name" {
-  type    = string
-  default = "nginxdemos-hello"
+variable "tags" {
+  description = "Tags to associate with created resources."
+  default     = {}
+  type        = map(any)
 }
 
-variable "container_image" {
-  type    = string
-  default = "nginxdemos/hello:latest"
+variable "ecs" {
+  description = <<-EOF
+ECS object to create.
+Values are input variables for the ecs sub-module:
+- `ecs_instance_type`: (optional|string) EC2 instance type to be used for the autoscaling group.
+- `ec2_autoscaling_min_size`: (optional|number) Min size for EC2 autoscaling group.
+- `ec2_autoscaling_max_size`: (optional|number) Max size for EC2 autoscaling group.
+- `ec2_autoscaling_target_capacity`: (optional|number) Per instance capacity percentage to target for autoscaling.
+- `ecs_task_desired_count`: (optional|number) Desired number of running ECS tasks.
+- `ecs_task_autoscaling_min`: (optional|number) Min number of running ECS tasks for service autoscaling.
+- `ecs_task_autoscaling_max`: (optional|number) Max number of running ECS tasks for service autoscaling.
+- `ecs_task_autoscaling_request_count`: (optional|number) ALB request count per task to trigger autoscaling.
+- `ecs_task_scale_in_cooldown`: (optional|number) Cooldown period after scaling in.
+- `ecs_task_scale_out_cooldown`: (optional|number) Cooldown period after scaling out.
+- `container_name`: (optional|string) Name of container to deploy.
+- `container_image`: (optional|string) Image for the container to deploy.
+- `container_cpu`: (optional|number) CPU request of the container.
+- `container_mem`: (optional|number) Memory request of the container.
+- `container_port`: (optional|number) Container listening port.
+
+Example:
+
+```
+{
+  ecs_instance_type = "t2.medium"
+  ec2_autoscaling_target_capacity = 90
+  container_image = "nginxdemos/hello:latest"
+}
+```
+
+EOF
+  default     = {}
 }
 
-variable "container_cpu" {
-  type    = number
-  default = 128
-}
+variable "alb" {
+  description = <<-EOF
+Application Load Balancer object to create.
+Values are input variables for the alb sub-module:
+- `app_route53_zone`: (optional|string) DNS Zone name to be used for creating app fqdn and cert validation record.
+- `app_fqdn`: (optional|string) FQDN for the application to be hosted, domain should match with zone.
+- `alb_listener_enable_https`: (optional|bool) Whether to listen on HTTPS or not.
+- `alb_security_group_ingress_rules`: (optional|list) List of security group ingress rules.
+- `alb_security_group_egress_rules`: (optional|list) List of security group egress rules.
 
-variable "container_mem" {
-  type    = number
-  default = 128
-}
+Example:
 
-variable "container_port" {
-  type    = number
-  default = 80
+```
+{
+  app_route53_zone = "example.com"
+  app_fqdn = "my-ecs-app.example.com"
+  alb_security_group_ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
 }
+```
 
-variable "alb_listener_enable_https" {
-  type    = bool
-  default = false
-}
-
-variable "app_route53_zone" {
-  type    = string
-  default = null
-}
-
-variable "app_fqdn" {
-  type    = string
-  default = null
+EOF
+  default     = {}
 }

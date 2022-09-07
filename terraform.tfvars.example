@@ -1,6 +1,20 @@
-aws_profile               = "my-aws-profile"
-ec2_key_pair              = "my-ec2-keypair"
-project_name              = "my-app"
-app_route53_zone          = "example.com"
-app_fqdn                  = "my-ecs-app.example.com"
-alb_listener_enable_https = true
+aws_profile  = "my-aws-profile"
+ec2_key_pair = "my-ec2-keypair"
+project_name = "my-app"
+alb = {
+  app_route53_zone          = "example.com"
+  app_fqdn                  = "my-ecs-app.example.com"
+  alb_listener_enable_https = true
+  alb_security_group_ingress_rules = [
+    {
+      from_port   = 80
+      to_port     = 80
+      cidr_blocks = ["0.0.0.0/0"]
+    },
+    {
+      from_port   = 443
+      to_port     = 443
+      cidr_blocks = ["0.0.0.0/0"]
+    }
+  ]
+}
